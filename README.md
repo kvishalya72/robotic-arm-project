@@ -9,3 +9,6 @@ This is a Python-based robotic arm project.
 
 ## Technologies Used
 - Python
+## 📸 Project Output
+
+![Project Output](project-output.png)

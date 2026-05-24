@@ -42,8 +42,14 @@ def detect_gesture(frame):
         return "STOP"
 
     brightness = np.mean(frame)
+    frame_std = frame.std()
     if brightness < 10:
         debug_message = f"Camera feed too dark or black (brightness={brightness:.2f})"
+        return "STOP"
+    if brightness > 245 or frame_std < 10:
+        debug_message = f"Camera feed overexposed or blank (brightness={brightness:.2f} std={frame_std:.2f})"
+        last_hand_bbox = None
+        last_dimensions = (0, 0)
         return "STOP"
 
     if USE_MEDIAPIPE and hands is not None:
@@ -72,10 +78,9 @@ def detect_gesture(frame):
             if avg_y > 0.6:
                 return "MOVE_DOWN"
             return "STOP"
-        debug_message = "Hand not found"
+        debug_message = "Hand not found in MediaPipe; falling back to motion detection"
         last_hand_bbox = None
         last_dimensions = (0, 0)
-        return "STOP"
 
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     gray = cv2.GaussianBlur(gray, (21, 21), 0)
